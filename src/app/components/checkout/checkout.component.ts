@@ -5,6 +5,7 @@ import {Country} from '../../common/country';
 import {State} from '../../common/state';
 import {of} from 'rxjs';
 import {map, take} from 'rxjs/operators';
+import {CartService} from '../../services/cart.service';
 
 @Component({
   selector: 'app-checkout',
@@ -28,7 +29,7 @@ export class CheckoutComponent implements OnInit {
   totalPrice: number = 0;
   totalQuantity: number = 0;
 
-  constructor(private formBuilder: FormBuilder, private fillFormService: FillUpFormsService) {
+  constructor(private formBuilder: FormBuilder, private fillFormService: FillUpFormsService, private cartService: CartService) {
   }
 
   ngOnInit(): void {
@@ -69,7 +70,7 @@ export class CheckoutComponent implements OnInit {
 
     this.fillFormService.getCountries().subscribe(data => this.countries = data);
 
-
+    this.reviewCartDetails();
   }
 
   onSubmit() {
@@ -83,7 +84,7 @@ export class CheckoutComponent implements OnInit {
     } else {
       this.checkoutGroup.controls.billingAddress.reset();
       this.billingAddressStates = [];
-      of(1,2,3).pipe(map(a=>a*2),take(2))
+      of(1, 2, 3).pipe(map(a => a * 2), take(2));
     }
   }
 
@@ -126,5 +127,10 @@ export class CheckoutComponent implements OnInit {
 
       formGroup.get('state').setValue(data[0]);
     });
+  }
+
+  private reviewCartDetails() {
+    this.cartService.totalPrice.subscribe(data => this.totalPrice = data);
+    this.cartService.totalQuantity.subscribe(data => this.totalQuantity = data);
   }
 }
